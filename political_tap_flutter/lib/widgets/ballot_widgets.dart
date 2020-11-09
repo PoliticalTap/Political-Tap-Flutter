@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:political_tap_flutter/models/candidate.dart';
 import 'package:political_tap_flutter/models/profile_arguments.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'dynamic_expansion_tile.dart';
 
 class CandidateCard extends StatefulWidget 
 {
@@ -13,6 +15,8 @@ class CandidateCard extends StatefulWidget
   _CandidateCardState createState() => _CandidateCardState();
 }
 
+//TODO: add highlighting functionality (based on Web application ::selection styling (ballot.component.css)
+//TODO: add string to display at the top of the page: Notice claim: Our data may not be completely updated for each election as it is still under development. 
 class _CandidateCardState extends State<CandidateCard> 
 {
   @override
@@ -51,8 +55,16 @@ class _CandidateContainerState extends State<CandidateContainer>
   @override
   Widget build(BuildContext context) 
   {
-    return ExpansionTile(
-      title: Text(widget.title),
+    return DynamicExpansionTile(
+      title: 
+        Text(
+          widget.title,
+          style: GoogleFonts.merriweather(
+            color: Colors.white
+          )
+        ),
+      titleColor: Color.fromARGB(255, 221, 17, 17),
+      trailingColor: Colors.white,
       initiallyExpanded: true,
       children: 
       [
@@ -63,10 +75,11 @@ class _CandidateContainerState extends State<CandidateContainer>
               crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
               children: widget.candidates.map((candidate) => CandidateCard(candidate: candidate)).toList(),
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics()
+              physics: NeverScrollableScrollPhysics(),
             );
           }
-        )
+        ),
+        SizedBox(height: 25)
       ]
     );
   }

@@ -26,6 +26,7 @@ class _BallotState extends State<Ballot>
   @override
   Widget build(BuildContext context) 
   {
+    // TODO: Create custom Scaffold to use for all pages
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 18, 0, 205),
