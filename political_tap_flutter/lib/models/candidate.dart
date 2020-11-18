@@ -5,15 +5,14 @@ class Candidate
   // Attributes
   String candidateId;
   String name;
-  String position;
   String politicalParty;
   String imageUrl;
   Image profileImage;
   
   // Constructor
-  Candidate({this.candidateId, this.name, this.position, this.politicalParty, this.imageUrl})
+  Candidate({this.candidateId, this.name, this.politicalParty, this.imageUrl})
   {
-    if (this.imageUrl != null)
+    if (this.imageUrl != null && this.imageUrl != "")
     {
       profileImage = Image.network(this.imageUrl);
     }
@@ -31,7 +30,7 @@ class Candidate
       candidateId: json['candidate_id'],
       name: json['name'], 
       politicalParty: json['party'],
-      //imageUrl: json['image_url'], TODO: add this eventually
+      imageUrl: json['photo']
     );
   }
 }

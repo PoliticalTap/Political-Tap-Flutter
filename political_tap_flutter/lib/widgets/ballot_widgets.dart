@@ -24,7 +24,7 @@ class _CandidateCardState extends State<CandidateCard>
   {
     return Card(
       child: new InkWell(
-        onTap: () => Navigator.pushNamed(context, "/profile", arguments: ProfileArguments(candidate: widget.candidate)),
+        onTap: () => Navigator.pushNamed(context, "/profile", arguments: ProfileArguments(candidateId: widget.candidate.candidateId)),
         child:Column(
           children: 
           [

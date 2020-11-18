@@ -1,8 +1,6 @@
-import 'package:political_tap_flutter/models/candidate.dart';
-
 class ProfileArguments
 {
-  final Candidate candidate;
+  final String candidateId;
 
-  ProfileArguments({this.candidate});
+  ProfileArguments({this.candidateId});
 }

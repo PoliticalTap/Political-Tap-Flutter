@@ -73,7 +73,6 @@ Future<List<CandidateContainer>> fetchCandidates() async
 
     data.forEach((element) 
       {
-        print(element["election"]);
         //list of candidates
         List<Candidate> candidateList = new List();
 

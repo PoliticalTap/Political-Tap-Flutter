@@ -18,7 +18,7 @@ class PoliticalTapApp extends StatelessWidget
       initialRoute: "/",
       routes: 
       {
-        "/": (context) => Feed(),
+        "/": (context) => Ballot(),
         "/feed": (context) => Feed(),
         "/ballot": (context) => Ballot(),
         "/settings": (context) => Settings(),
