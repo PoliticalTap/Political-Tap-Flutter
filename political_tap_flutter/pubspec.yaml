@@ -27,6 +27,8 @@ dependencies:
   google_fonts: ^1.1.1
   tweet_ui: ^2.3.0+1
   flutter_launcher_icons: ^0.7.5
+  location: ^3.0.0
+  shared_preferences: ^0.5.12+4
 
 
   # The following adds the Cupertino Icons font to your application.

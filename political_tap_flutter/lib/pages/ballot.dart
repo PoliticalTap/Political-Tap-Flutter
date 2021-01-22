@@ -5,6 +5,7 @@ import 'package:political_tap_flutter/widgets/ballot_widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Ballot extends StatefulWidget 
 {
@@ -43,7 +44,7 @@ class _BallotState extends State<Ballot>
           } 
           else if (snapshot.hasError) 
           {
-            return Center(child: Text( "Candidate information failed to load. Please try again.", style: TextStyle(fontSize: 20) ));
+            return Center(child: Text( "Candidate information failed to load", style: TextStyle(fontSize: 20) ));
           }
 
           // By default, show a loading spinner.
@@ -56,9 +57,21 @@ class _BallotState extends State<Ballot>
 
 Future<List<CandidateContainer>> fetchCandidates() async 
 {
+  final prefs = await SharedPreferences.getInstance();
+
+  // Try reading data from the counter key. If it doesn't exist, return 0.
+  final zipCode = prefs.getString('userZip') ?? "0";
+
+  var params = {
+    "zip" : zipCode,
+  };
+
   //fetches candidate data from API
-  String url = "https://political-tap.herokuapp.com/testCandidate";
-  final response = await http.get(url);
+  Uri uri = Uri.https("political-tap.herokuapp.com", "getCandidateList", params);
+  final response = await http.get(uri);
+
+  // String url = "https://political-tap.herokuapp.com/getCandidateList?zip=45011";
+  // final response = await http.get(url);
 
   if (response.statusCode == 200) 
   {
