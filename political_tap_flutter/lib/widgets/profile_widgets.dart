@@ -58,6 +58,11 @@ class ProfileTabController extends StatelessWidget
                 homeCity: candidateBio.homeCity, 
                 homeState: candidateBio.homeState, 
                 religion: candidateBio.religion,
+                education: candidateBio.education,
+                office: candidateBio.office,
+                orgMembership: candidateBio.orgMembership,
+                political: candidateBio.political,
+                profession: candidateBio.profession
               ),
               TweetList(candidateId: candidateBio.candidateId)
             ]
@@ -152,8 +157,14 @@ class ProfileInfo extends StatefulWidget
   final String homeCity;
   final String homeState;
   final String religion;
+  final List<String> education;
+  final List<String> office;
+  final List<String> orgMembership;
+  final List<String> political;
+  final List<String> profession;
 
-  ProfileInfo({@required this.birthDate, @required this.family, @required this.gender, @required this.homeCity, @required this.homeState, @required this.religion});
+  ProfileInfo({@required this.birthDate, @required this.family, @required this.gender, @required this.homeCity, @required this.homeState, @required this.religion,
+  @required this.education, @required this.office, @required this.orgMembership, @required this.political, @required this.profession});
 
   @override
   _ProfileInfoState createState() => _ProfileInfoState();
@@ -166,7 +177,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
       padding: EdgeInsets.all(10),
       child: ListView(
         children: [
-          Text("Birth-date", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Text("Birthdate", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
           Divider(color: Colors.red, thickness: 3, height: 25),
           Text(widget.birthDate, style: TextStyle(fontSize: 16)),
           SizedBox(height: 30),
@@ -189,9 +200,40 @@ class _ProfileInfoState extends State<ProfileInfo> {
           Text("Religion", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
           Divider(color: Colors.red, thickness: 3, height: 30),
           Text(widget.religion, style: TextStyle(fontSize: 16)),
-          SizedBox(height: 30)
+          SizedBox(height: 30),
+
+          Text("Education", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Divider(color: Colors.red, thickness: 3, height: 30),
+          // Text(widget.education[0], style: TextStyle(fontSize: 16)),
+          getTextWidgets(widget.education),
+          SizedBox(height: 30),
+
+          Text("Office", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Divider(color: Colors.red, thickness: 3, height: 30),
+          // Text(widget.office[0], style: TextStyle(fontSize: 16)),
+          getTextWidgets(widget.office, bulletPoints: false),
+          SizedBox(height: 30),
+
+          Text("Organization Membership", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Divider(color: Colors.red, thickness: 3, height: 30),
+          // Text(widget.orgMembership[0], style: TextStyle(fontSize: 16)),
+          getTextWidgets(widget.orgMembership),
+          SizedBox(height: 30),
+
+          Text("Political Experience", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Divider(color: Colors.red, thickness: 3, height: 30),
+          // Text(widget.political[0], style: TextStyle(fontSize: 16)),
+          getTextWidgets(widget.political),
+          SizedBox(height: 30),
+
+          Text("Professional Experience", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Divider(color: Colors.red, thickness: 3, height: 30),
+          // Text(widget.profession[0], style: TextStyle(fontSize: 16)),
+          getTextWidgets(widget.profession),
+          SizedBox(height: 30),
         ],
       )
+     
     );
   }
 }
@@ -231,7 +273,7 @@ class _TweetListState extends State<TweetList>
           } 
           else if (snapshot.hasError) 
           {
-            return Center(child: Text("${snapshot.error}", style: TextStyle(fontSize: 20) ));
+            return Center(child: Text("${snapshot.error}", style: TextStyle(fontSize: 20), textAlign: TextAlign.center,));
           }
 
           // By default, show a loading spinner.
@@ -281,4 +323,18 @@ Future<List<EmbeddedTweetView>> fetchCandidateTweets(String candidateId) async
     // then throw an exception.
     throw Exception('Failed to load candidate tweets');
   }
+}
+
+Widget getTextWidgets(List<String> strings, {bool bulletPoints = true})
+{
+  return new Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: strings.map((item) {
+      if (item != "No information available" && bulletPoints)
+      {
+        item = "\u2022   " + item;
+      }
+      return new Text(item, style: TextStyle(fontSize: 16));
+    }).toList()
+  );
 }
