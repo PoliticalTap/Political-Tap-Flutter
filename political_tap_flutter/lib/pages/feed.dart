@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:political_tap_flutter/main.dart';
+import 'package:political_tap_flutter/widgets/feed_widgets.dart';
 
 class Feed extends StatelessWidget 
 {
@@ -13,7 +14,7 @@ class Feed extends StatelessWidget
       ),
       drawer: NavDrawer(),
       body: Container(
-        child: Text("Feed")
+        child: FeedTweetList()
       ),
     );
   }
