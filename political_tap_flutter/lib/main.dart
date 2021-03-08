@@ -6,7 +6,7 @@ import 'package:political_tap_flutter/pages/settings.dart';
 import 'package:political_tap_flutter/widgets/location_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-var initialRoute = "/";
+var initialRoute = "/init";
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -25,12 +25,11 @@ class PoliticalTapApp extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
-    print(initialRoute);
     return MaterialApp(
       initialRoute: initialRoute,
       routes: 
       {
-        "/": (context) => Initializer(),
+        "/init": (context) => Initializer(),
         "/feed": (context) => Feed(),
         "/ballot": (context) => Ballot(),
         "/settings": (context) => Settings(),

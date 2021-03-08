@@ -20,7 +20,7 @@ class ProfileTabController extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) 
         {
@@ -41,6 +41,7 @@ class ProfileTabController extends StatelessWidget
                   [
                     Tab(child: Text("About", style: TextStyle(fontSize: 16))),
                     Tab(child: Text("Posts", style: TextStyle(fontSize: 16))),
+                    Tab(child: Text("Votes", style: TextStyle(fontSize: 16))),
                   ]
                 ),
               ),
@@ -64,7 +65,8 @@ class ProfileTabController extends StatelessWidget
                 political: candidateBio.political,
                 profession: candidateBio.profession
               ),
-              TweetList(candidateId: candidateBio.candidateId)
+              TweetList(candidateId: candidateBio.candidateId),
+              VoteList(candidateId: candidateBio.candidateId)
             ]
         ),
       ),
@@ -310,7 +312,6 @@ Future<List<EmbeddedTweetView>> fetchCandidateTweets(String candidateId) async
 
     data["tweets"].forEach((element) 
       {
-        print(element);
         tweets.add(EmbeddedTweetView.fromTweet(Tweet.fromJson(element)));
       }
     );
@@ -337,4 +338,123 @@ Widget getTextWidgets(List<String> strings, {bool bulletPoints = true})
       return new Text(item, style: TextStyle(fontSize: 16));
     }).toList()
   );
+}
+
+class VoteList extends StatefulWidget 
+{
+  final candidateId;
+  Future<List<Map<String, dynamic>>> voteResponse;
+
+  VoteList({@required this.candidateId})
+  {
+    voteResponse = fetchVoteHistory(candidateId);
+  }
+
+  @override
+  _VoteListState createState() => _VoteListState();
+}
+
+class _VoteListState extends State<VoteList> 
+{
+
+  @override
+  Widget build(BuildContext context) 
+  {
+    return FutureBuilder(
+      future: widget.voteResponse,
+      builder: (context, snapshot) {
+        if (snapshot.hasData)
+        {
+          List<Map<String, dynamic>> response = snapshot.data;
+          int length = response.length;
+
+          if (length == 0)
+          {
+            return Center(child: Text("Vote history not available"));
+          }
+
+          final voteColors = 
+          {
+            //green
+            "Yes" : Color.fromARGB(255, 51, 153, 0),
+
+            //light blue
+            "Sponsor" : Color.fromARGB(255, 102, 153, 204),
+            "Co-Sponsor" : Color.fromARGB(255, 102, 153, 204),
+
+            //red
+            "No" : Color.fromARGB(255, 221, 17, 17),
+            
+            //gold
+            "Did Not Vote" : Color.fromARGB(255, 204, 153, 0),
+
+            //white
+            "Unknown Vote" : Color.fromARGB(255, 153, 153, 153)
+          };
+
+          return ListView.separated
+          (
+            itemCount: length,
+            itemBuilder: (BuildContext context, int index)
+            {
+              Map<String, dynamic> vote = response[index];
+              Color voteColor = voteColors[vote["vote"]];
+              
+              return new ListTile(
+               title: Text(vote["billNumber"]),
+               subtitle: Text(vote["billTitle"] + "\nStage:" + vote["stage"]),
+               trailing: SizedBox(
+                 width: 55,
+                 child: Text(vote["vote"], style: TextStyle(color: voteColor, fontWeight: FontWeight.bold))),
+              );
+
+              // return new Material(
+              //   color: voteColor,
+              //   child: ListTile(
+              //     title: Text(vote["billNumber"]),
+              //     subtitle: Text(vote["billTitle"]),
+              //     trailing: Text(vote["vote"])
+              //   )
+              // );
+
+            },
+            separatorBuilder: (context, builder)
+            {
+              return Divider(thickness: 2);
+            });
+        }
+        else if (snapshot.hasError) 
+        {
+          return Center(child: Text("${snapshot.error}", style: TextStyle(fontSize: 20), textAlign: TextAlign.center,));
+        }
+
+        // By default, show a loading spinner.
+        return Center(child: CircularProgressIndicator());
+      }); 
+  }
+}
+
+Future<List<Map<String, dynamic>>> fetchVoteHistory(String candidateId) async 
+{
+  //fetches candidate bio data from API
+  var params = {
+    "candidate_id" : candidateId
+  };
+
+  Uri uri = Uri.https("political-tap.herokuapp.com", "getCandidateVoteHistory", params);
+  final response = await http.get(uri);
+
+  if (response.statusCode == 200) 
+  {
+    String body = response.body;
+    final data = (jsonDecode(body)as List).map((e) => e as Map<String, dynamic>)?.toList();
+
+    return data;
+  } 
+  else 
+  {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load candidate vote history');
+  }
 }

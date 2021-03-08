@@ -93,8 +93,6 @@ class CandidateBio
       orgMembershipList.add(json["orgMembership"]["experience"]["fullText"]);
     }
 
-    print("no issues here");
-
     // check for multiple political experiences
     List<String> politicalList = new List();
     if (json["political"] is String)
