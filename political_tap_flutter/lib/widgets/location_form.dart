@@ -149,6 +149,8 @@ class _LocationFormState extends State<LocationForm> {
         child: ListView
         (
           children: [
+            SizedBox(height: 30),
+
             Text("$locationString", style: TextStyle(fontSize: 16)),
 
             TextFormField

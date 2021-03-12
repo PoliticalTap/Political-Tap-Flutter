@@ -7,6 +7,8 @@ import 'package:tweet_ui/tweet_ui.dart';
 import 'package:tweet_ui/embedded_tweet_view.dart';
 import 'package:http/http.dart' as http;
 import 'package:tweet_ui/models/api/tweet.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileTabController extends StatelessWidget 
 {
@@ -53,6 +55,7 @@ class ProfileTabController extends StatelessWidget
             children: 
             [
               ProfileInfo(
+                candidateId: candidateBio.candidateId,
                 birthDate: candidateBio.birthDate, 
                 family: candidateBio.family, 
                 gender: candidateBio.gender, 
@@ -153,6 +156,7 @@ class _ProfileTitleState extends State<ProfileTitle>
 
 class ProfileInfo extends StatefulWidget 
 {
+  final String candidateId;
   final String birthDate;
   final String family;
   final String gender;
@@ -165,8 +169,8 @@ class ProfileInfo extends StatefulWidget
   final List<String> political;
   final List<String> profession;
 
-  ProfileInfo({@required this.birthDate, @required this.family, @required this.gender, @required this.homeCity, @required this.homeState, @required this.religion,
-  @required this.education, @required this.office, @required this.orgMembership, @required this.political, @required this.profession});
+  ProfileInfo({@required this.candidateId, @required this.birthDate, @required this.family, @required this.gender, @required this.homeCity, @required this.homeState, 
+  @required this.religion, @required this.education, @required this.office, @required this.orgMembership, @required this.political, @required this.profession});
 
   @override
   _ProfileInfoState createState() => _ProfileInfoState();
@@ -233,6 +237,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
           // Text(widget.profession[0], style: TextStyle(fontSize: 16)),
           getTextWidgets(widget.profession),
           SizedBox(height: 30),
+
+          Text("Social Media Links", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Divider(color: Colors.red, thickness: 3, height: 30),
+          SocialMediaSection(candidateId: widget.candidateId),
         ],
       )
      
@@ -404,18 +412,9 @@ class _VoteListState extends State<VoteList>
                title: Text(vote["billNumber"]),
                subtitle: Text(vote["billTitle"] + "\nStage:" + vote["stage"]),
                trailing: SizedBox(
-                 width: 55,
+                 width: 60,
                  child: Text(vote["vote"], style: TextStyle(color: voteColor, fontWeight: FontWeight.bold))),
               );
-
-              // return new Material(
-              //   color: voteColor,
-              //   child: ListTile(
-              //     title: Text(vote["billNumber"]),
-              //     subtitle: Text(vote["billTitle"]),
-              //     trailing: Text(vote["vote"])
-              //   )
-              // );
 
             },
             separatorBuilder: (context, builder)
@@ -457,4 +456,128 @@ Future<List<Map<String, dynamic>>> fetchVoteHistory(String candidateId) async
     // then throw an exception.
     throw Exception('Failed to load candidate vote history');
   }
+}
+
+class SocialMediaSection extends StatefulWidget 
+{
+  final candidateId;
+  Future<Map<String, dynamic>> socialMediaResponse;
+
+  SocialMediaSection({@required this.candidateId})
+  {
+    socialMediaResponse = fetchSocialMediaLinks(candidateId);
+  }
+
+  @override
+  _SocialMediaSectionState createState() => _SocialMediaSectionState();
+}
+
+class _SocialMediaSectionState extends State<SocialMediaSection> 
+{
+
+  @override
+  Widget build(BuildContext context) 
+  {
+    return FutureBuilder(
+      future: widget.socialMediaResponse,
+      builder: (context, snapshot) {
+        if (snapshot.hasData)
+        {
+          Map<String, dynamic> response = snapshot.data;
+          List campaignLinks = response["campaign"];
+          print(campaignLinks);
+          List officeLinks = response["office"];
+
+          return Column
+          (
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Campaign", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              getLinkWidgets(campaignLinks),
+              SizedBox(height: 30),
+
+              Text("Office", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              getLinkWidgets(officeLinks),
+              SizedBox(height: 30)
+            ]
+          );
+
+        }
+        else if (snapshot.hasError) 
+        {
+          return Text("Error loading social media data", style: TextStyle(fontSize: 16));
+        }
+
+        // By default, show a loading spinner.
+        return Center(child: CircularProgressIndicator());
+      }); 
+  }
+}
+
+Future<Map<String, dynamic>> fetchSocialMediaLinks(String candidateId) async 
+{
+  //fetches candidate bio data from API
+  var params = {
+    "candidate_id" : candidateId
+  };
+
+  Uri uri = Uri.https("political-tap.herokuapp.com", "getSocialMediaLinks", params);
+  final response = await http.get(uri);
+
+  if (response.statusCode == 200) 
+  {
+    String body = response.body;
+    final data = jsonDecode(body);
+
+    return data;
+  } 
+  else 
+  {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load candidate social media links');
+  }
+}
+
+Widget getLinkWidgets(List links)
+{
+  if (links.length == 0)
+  {
+    return Text("Not available", style: TextStyle(fontSize: 16)); 
+  }
+
+  final socialMediaIcons = 
+  {
+    "twitter" : FontAwesomeIcons.twitterSquare,
+    "facebook": FontAwesomeIcons.facebookSquare,
+    "instagram" : FontAwesomeIcons.instagramSquare,
+    "youtube" : FontAwesomeIcons.youtube,
+    "linkedin" : FontAwesomeIcons.linkedin,
+  };
+
+  return new Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: links.map((item) 
+    {
+      return new InkWell(
+        child: Row(
+          children: [
+            FaIcon(socialMediaIcons[item["type"]], color: Color.fromARGB(255, 18, 0, 205)),
+            SizedBox(width: 10),
+            Text(
+              item["address"], 
+              style: TextStyle(
+                fontSize: 16,
+                color: Color.fromARGB(255, 18, 0, 205), 
+                decoration: TextDecoration.underline
+              )
+            )
+          ],
+        ),
+        onTap: () {
+          launch(item["address"]);
+        },
+      );
+    }).toList()
+  );
 }

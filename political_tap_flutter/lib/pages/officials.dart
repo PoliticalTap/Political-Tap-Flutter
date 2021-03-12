@@ -7,13 +7,13 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Ballot extends StatefulWidget 
+class Officials extends StatefulWidget 
 {
   @override
-  _BallotState createState() => _BallotState();
+  _OfficialsState createState() => _OfficialsState();
 }
 
-class _BallotState extends State<Ballot> 
+class _OfficialsState extends State<Officials> 
 {
   Future<List<CandidateContainer>> candidateContainers;
 
@@ -30,7 +30,7 @@ class _BallotState extends State<Ballot>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 18, 0, 205),
-        title: Text("Ballot"),
+        title: Text("Officials"),
       ),
       drawer: NavDrawer(),
       body: FutureBuilder<List<CandidateContainer>>(
@@ -66,7 +66,7 @@ Future<List<CandidateContainer>> fetchCandidates() async
   };
 
   //fetches candidate data from API
-  Uri uri = Uri.https("political-tap.herokuapp.com", "getCandidateList", params);
+  Uri uri = Uri.https("political-tap.herokuapp.com", "getOfficialsList", params);
   final response = await http.get(uri);
 
   if (response.statusCode == 200) 
