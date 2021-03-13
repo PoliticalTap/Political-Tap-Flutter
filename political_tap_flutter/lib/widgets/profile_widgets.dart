@@ -564,12 +564,15 @@ Widget getLinkWidgets(List links)
           children: [
             FaIcon(socialMediaIcons[item["type"]], color: Color.fromARGB(255, 18, 0, 205)),
             SizedBox(width: 10),
-            Text(
-              item["address"], 
-              style: TextStyle(
-                fontSize: 16,
-                color: Color.fromARGB(255, 18, 0, 205), 
-                decoration: TextDecoration.underline
+            Flexible(
+              child: Text(
+                item["address"],
+                overflow: TextOverflow.ellipsis, 
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color.fromARGB(255, 18, 0, 205), 
+                  decoration: TextDecoration.underline
+                )
               )
             )
           ],

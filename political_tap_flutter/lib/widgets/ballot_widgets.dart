@@ -15,8 +15,6 @@ class CandidateCard extends StatefulWidget
   _CandidateCardState createState() => _CandidateCardState();
 }
 
-//TODO: add highlighting functionality (based on Web application ::selection styling (ballot.component.css)
-//TODO: add string to display at the top of the page: Notice claim: Our data may not be completely updated for each election as it is still under development. 
 class _CandidateCardState extends State<CandidateCard> 
 {
   @override
